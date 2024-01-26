@@ -4,6 +4,26 @@ import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 
+
+const generateAccessTokenAndRefreshTokens = async (userId) => {
+    try {
+        const user = await User.findById(userId)
+
+        // generate access token and refresh token 
+        const accessToken = await user.generateAccessToken()
+        const refreshToken = await user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
+        await user.save({ validateBeforeSave: false })
+
+        return { accessToken, refreshToken }
+
+    } catch (err) {
+        throw new ApiError(500, `something went wrong while generating
+        refresh and access token`)
+    }
+}
+
 const registerUser = asyncHandler(async (req, res) => {
     // get user results from frontend 
     // validation - not-empty
@@ -76,7 +96,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const { email, username, password } = req.body
 
-    if (!(username || email)) {
+    if (!username && !email) {
         throw new ApiError(400, "username or email is required")
     }
 
