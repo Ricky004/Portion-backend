@@ -6,20 +6,21 @@ import { User } from "../models/user.model.js";
 
 
 const createDocument = asyncHandler(async (req, res) => {
-    
-    const existedUser = await User.findOne({
-        $or: [{ username }, { email }]
-    })
+
+    const { title, parentDocument, } = req.body
+     
+    const userId = req.user?._id
+
+    const existedUser = await User.findById(userId)
 
     if (!existedUser) {
-        throw new ApiError(404, "User is not authorized to do this, pls register first or login")
+        throw new ApiError(404, `User is not authorized to do this,
+        pls register first or login`)
     }
     
-    // const userId = await User.findById(existedUser._id)
-
     const document = await Document.create({
         title,
-        userId: existedUser._id,
+        userId,
         parentDocument,
         isArchived: false,
         isPublished: false

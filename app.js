@@ -23,6 +23,6 @@ import documentRouter from "./routes/document.routes.js"
 
 // routes declaration 
 app.use("/api/v1/users", userRouter)
-app.use("/api/v1/users", documentRouter)
+app.use("/api/v1/document", documentRouter)
 
 export { app }
