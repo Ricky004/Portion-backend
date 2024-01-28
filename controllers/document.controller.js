@@ -15,7 +15,7 @@ const createDocument = asyncHandler(async (req, res) => {
 
     if (!existedUser) {
         throw new ApiError(404, `User is not authorized to do this,
-        pls register first or login`)
+        pls register or login first`)
     }
     
     const document = await Document.create({
@@ -31,4 +31,19 @@ const createDocument = asyncHandler(async (req, res) => {
     )
 })
 
-export { createDocument }
+const getDocuments = asyncHandler(async (req, res) => {
+    
+    const userId = req.user?._id
+    const document = await Document.find({ userId })
+       
+    if (!document) {    
+      throw new ApiError(500, err?.message || "Internal server error")
+    }
+
+    
+    return res.status(200).json(
+        new ApiResponse(200, document, "Successfuly retrive all the documents")
+    )
+})
+
+export { createDocument, getDocuments }
