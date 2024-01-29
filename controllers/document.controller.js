@@ -34,15 +34,22 @@ const createDocument = asyncHandler(async (req, res) => {
 const getDocuments = asyncHandler(async (req, res) => {
     
     const userId = req.user?._id
-    const document = await Document.find({ userId })
-       
-    if (!document) {    
-      throw new ApiError(500, err?.message || "Internal server error")
+
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized")
     }
 
-    
+    const documents = await Document.aggregate([
+        { $match: { userId: userId.toString(), isArchived: false }},
+        { $sort: { createdAt: -1 }}
+    ])
+
+    if (!documents) {    
+      throw new ApiError(500, "Internal server error")
+    }
+
     return res.status(200).json(
-        new ApiResponse(200, document, "Successfuly retrive all the documents")
+        new ApiResponse(200, documents, "Successfuly retrive all the documents")
     )
 })
 
