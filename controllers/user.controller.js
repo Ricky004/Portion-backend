@@ -210,11 +210,24 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
+const checkUser = asyncHandler(async (_, res) => {
+ try {
+    res.status(200)
+      .json(
+        new ApiResponse(200, { registerUser: true }) 
+      )
+ } catch (error) {
+    throw new ApiError(500, "Server error")
+  }
+    
+})
+
 export {
     registerUser,
     loginUser,
     logoutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    checkUser
 }
 
 
